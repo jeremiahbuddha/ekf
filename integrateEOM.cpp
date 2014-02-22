@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <boost/numeric/odeint.hpp>
+#include <Motion.hpp>
 
 using namespace std;
 

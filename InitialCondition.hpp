@@ -1,6 +1,10 @@
 #ifndef EKF_INITIALCONDITION_INCLUDE_                                                      
 #define EKF_INITIALCONDITION_INCLUDE_ 
 
+#include <vector>
+
+using namespace std;
+
 class InitialCondition
 {
    /*

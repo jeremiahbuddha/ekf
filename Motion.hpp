@@ -1,8 +1,13 @@
+#ifndef EKF_MOTION_INCLUDE_                                                    
+#define EKF_MOTION_INCLUDE_  
 
-#include <iostream>
-#include <"Force.hpp">
-#include <"Agent.hpp">
-#include <"InitialCondition.hpp">
+#include <vector>
+#include <Time.hpp>
+#include <Action.hpp>
+#include <Agent.hpp>
+#include <InitialCondition.hpp>
+
+using namespace std;
 
 class Motion {
    /*
@@ -18,7 +23,7 @@ class Motion {
 
       ~Motion();
 
-      void AddForce( const Force f ); // add effect of force to motion
+      void addAction( const Action a ); // add effect of action to motion
 
       void getAcceleration( const Time t ) const; // get acceleration of motion at time t
 
@@ -26,6 +31,8 @@ class Motion {
 
    private:
 
-      void setInitialConditions( const InitialCondition ic )
-
+      void setInitialConditions( const InitialCondition ic );
+      vector< double > m_state;
 };
+
+#endif // Include guard

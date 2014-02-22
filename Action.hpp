@@ -1,6 +1,10 @@
 #ifndef EKF_ACTION_INCLUDE_                                                      
 #define EKF_ACTION_INCLUDE_ 
 
+#include <vector>
+
+using namespace std;
+
 class Action
 {
    /*

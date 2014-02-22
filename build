@@ -4,12 +4,12 @@ import os
 import sys
 from os.path import exists
 
-exe = "run_ekf"
+exe = " -o run_ekf"
 source = " {0}".format( sys.argv[1] )
-libs = " -I/Users/smithj1/ekf/lib"
+libs = " -I/Users/smithj1/ekf/lib -I./"
 
 
 if exists( exe ):
    os.remove( exe )
 
-os.system( "c++ -std=c++11 -Wall -Wextra -stdlib=libc++ -o " + exe + source  + libs )
+os.system( "c++ -std=c++11 -stdlib=libc++" + source  + libs + exe )
