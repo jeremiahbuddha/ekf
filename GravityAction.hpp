@@ -1,15 +1,32 @@
 #ifndef EKF_GRAVITYACTION_INCLUDE_                                                      
 #define EKF_GRAVITYACTION_INCLUDE_ 
 
+#include <string>                                                                
+#include <vector>
 #include <Action.hpp>
 
 class GravityAction : public Action
 {
    public:
       GravityAction();
-      ~GravityAction();
-   private:
+      GravityAction( const string name, const double radius, const double mu, 
+                     const double rotationRate, const double J2 );
 
-}
+      ~GravityAction() override;
+
+      // Computes the acceleration due to this action and adds it to the         
+      // passed in vector "acceleration".                                        
+      void getAcceleration( vector< double > &acceleration, double t,                              
+                             const vector< double > &state ) const override; 
+   private:
+      string m_name;                                             
+      double m_radius;
+      double m_mu;
+      double m_rotationRate;
+      double m_J2;
+
+      double accJ2( const vector< double > &state, const char component ) const;
+
+};
 
 #endif // Inlcude guard

@@ -5,7 +5,8 @@ import sys
 from os.path import exists
 
 exe = " -o run_ekf"
-source = " {0}".format( sys.argv[1] )
+source = " *.cpp "
+#source = " {0}".format( sys.argv[1] )
 libs = " -I/Users/smithj1/ekf/lib -I./"
 
 

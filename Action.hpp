@@ -12,15 +12,16 @@ class Action
    Motion object.
    */
    public:
-      Action();
-      ~Action();
+      // Constructor
+      Action(){};
 
       // Computes the acceleration due to this action and adds it to the
       // passed in vector "acceleration".
-      virtual void get_acceleration( vector< double > &acceleration,
-                                     const Time &t, 
-                                     const vector< double > &state ); 
-                               
+      virtual void getAcceleration( vector< double > &acceleration,
+                                     double t, 
+                                     const vector< double > &state ) const {}; 
+      // Destructor
+      virtual ~Action(){};
    private:
 
 };

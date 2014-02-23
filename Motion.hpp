@@ -2,7 +2,6 @@
 #define EKF_MOTION_INCLUDE_  
 
 #include <vector>
-#include <Time.hpp>
 #include <Action.hpp>
 #include <Agent.hpp>
 #include <InitialCondition.hpp>
@@ -12,27 +11,36 @@ using namespace std;
 class Motion {
    /*
    The motion class is responsible for building the equations of motion for a
-   given body, and 
+   given body. 
 
    */
    public:
 
       Motion();
-
-      Motion( const InitialCondition ic );
-
+      //Motion( const InitialCondition &ic );
       ~Motion();
 
-      void addAction( const Action a ); // add effect of action to motion
+      // Add effect of action to motion
+      void addAction( const Action &a ); 
 
-      void getAcceleration( const Time t ) const; // get acceleration of motion at time t
+      //// Get current time step
+      //double getTime() const;
+      //// Get value of state at current step
+      //vector< double > getState() const;
+      //// Get the partials of Motion wrt a group of Agents
+      //vector< double > getPartials( const AgentGroup &a ) const; 
 
-      void getPartials( const AgentGroup a ); // get partials of motion with respect to a group of Agents
+      // This method defines the Equations of Motion for the odeint integrator
+      void operator() ( const vector< double > &x , 
+                        vector< double > &dxdt , const double t  );
 
    private:
 
-      void setInitialConditions( const InitialCondition ic );
-      vector< double > m_state;
+      //double m_time;
+      //vector< double > m_state;                                                  
+      vector< Action > m_actions;
+
+      //void setInitialConditions( InitialCondition ic );
 };
 
 #endif // Include guard
