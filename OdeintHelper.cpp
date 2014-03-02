@@ -42,7 +42,6 @@ operator() (
    // Accumulate accelerations from the different actions.                                                     
    for ( auto ap: m_actions )                                              
    {                                                                       
-      cout << "GETTING ACCELERATION" << endl;
       ap->getAcceleration( accel, t, x );                                    
    }                                                                       
    // State elements                                                             
