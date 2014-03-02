@@ -9,18 +9,15 @@ using namespace std;
 class OdeintHelper{                                                              
    public:                                                                       
 
-      OdeintHelper();                                                            
+      OdeintHelper( vector< const Action* > &actions );                                                            
       ~OdeintHelper();                                                           
 
-      // Add action to helper 
-      void addAction( const Action &a ); 
- 
       // Allows this class to be called by the odeint solver
       void operator() ( const vector< double > &x, vector< double > &dxdt, 
                         const double t );
                                                        
    private:                                                                      
-      vector< const Action* > m_actions;
+      vector< const Action* > &m_actions;
 };
 
 #endif // Include guard

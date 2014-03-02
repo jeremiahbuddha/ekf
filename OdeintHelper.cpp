@@ -7,8 +7,8 @@
 // CONSTRUCTORS / DESCTRUCTOR                
 
 OdeintHelper::
-OdeintHelper()
-   : m_actions()
+OdeintHelper( vector< const Action* > &actions )
+   : m_actions( actions )
 {
 }
 
@@ -20,15 +20,6 @@ OdeintHelper::
 //=============================================================================  
 //=============================================================================  
 // PUBLIC MEMBERS       
-
-// This method adds an action to the action list
-void
-OdeintHelper::
-addAction( const Action &a )
-{
-   const Action* ap = &a;
-   m_actions.push_back( ap );
-}
 
 // This method defines the equations of motion for the odeint integrator   
 void 

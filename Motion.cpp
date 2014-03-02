@@ -32,7 +32,7 @@ Motion()
      m_state(), 
      m_step(),
      m_actions(),
-     m_helper()
+     m_helper( m_actions )
 { 
 }
 
@@ -43,7 +43,7 @@ Motion( const vector< double > &ic, double step )
      m_state( ic ),                                                                  
      m_step( step ),
      m_actions(),
-     m_helper()                                                                 
+     m_helper( m_actions )                                                                 
 {                                                                                
 }  
 
@@ -62,7 +62,6 @@ addAction( const Action &a )
 {
    const Action* ap = &a; 
    m_actions.push_back( ap );
-   m_helper.addAction( a );
 }
 
 // Step the integration of Motion object to time t
@@ -129,12 +128,12 @@ printState( double t ) const
    {                                                                             
       vector< double > state = search->second;                                                     
       cout << "\n### State at time " << t << endl;                                  
-      cout << setprecision(18) << m_state[0] << endl;                               
-      cout << m_state[1] << endl;                                                   
-      cout << m_state[2] << endl;                                                   
-      cout << m_state[3] << endl;                                                   
-      cout << m_state[4] << endl;                                                   
-      cout << m_state[5] << endl;  
+      cout << setprecision(18) << state[0] << endl;                               
+      cout << state[1] << endl;                                                   
+      cout << state[2] << endl;                                                   
+      cout << state[3] << endl;                                                   
+      cout << state[4] << endl;                                                   
+      cout << state[5] << endl;  
    }                                                                             
    else                                                                          
    {                                                                             
@@ -148,9 +147,6 @@ void
 Motion::                                                                         
 printAllStates() const                                                     
 {                                                                                
-   cout << "IN HERE" << endl;
-   cout << "pastStates is empty: " << m_pastStates.empty() << endl;
-   //map< double, vector< double > >::const_iterator all;
    for ( auto a: m_pastStates )
    {
       printState( a.first );
