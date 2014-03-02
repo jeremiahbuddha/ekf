@@ -1,3 +1,5 @@
+
+#include <iostream>
 #include <cmath> 
 #include <GravityAction.hpp>
 
@@ -9,7 +11,6 @@ GravityAction()
    : m_name(),                                                             
      m_radius(),                                                         
      m_mu(),                                                                 
-     m_rotationRate(),                                             
      m_J2()                                                                  
 {                                                                                
 }  
@@ -20,12 +21,10 @@ GravityAction(
    const string name, 
    const double radius, 
    const double mu,    
-   const double rotationRate, 
    const double J2 )
    : m_name( name ), 
      m_radius( radius ), 
      m_mu( mu ),
-     m_rotationRate( rotationRate ),
      m_J2( J2 )
 {
 } 
@@ -45,10 +44,17 @@ getAcceleration(
    double t,            
    const vector< double > &state ) const
 { 
+   cout << "   -> inside GravityAction.getAcceleration()" << endl;
    double dist = sqrt( pow( state[0], 2 ) + pow( state[1], 2 ) + pow( state[2], 2 ) );
    acceleration[0] += -m_mu * state[0] / pow( dist, 3 ) * accJ2( state, 'x' ); 
    acceleration[1] += -m_mu * state[1] / pow( dist, 3 ) * accJ2( state, 'y' ); 
    acceleration[2] += -m_mu * state[2] / pow( dist, 3 ) * accJ2( state, 'z' ); 
+   
+   cout << "\nAcceleration at " << t << endl;
+   cout << "   aX: " << acceleration[0] << endl;                                    
+   cout << "   aY: " << acceleration[1] << endl;                                 
+   cout << "   aZ: " << acceleration[2] << endl;                                 
+
 }
 
 // Computes the J2 gravitational perturbation, by state component.

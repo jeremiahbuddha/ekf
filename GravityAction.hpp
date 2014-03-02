@@ -10,7 +10,7 @@ class GravityAction : public Action
    public:
       GravityAction();
       GravityAction( const string name, const double radius, const double mu, 
-                     const double rotationRate, const double J2 );
+                     const double J2 );
 
       ~GravityAction() override;
 
@@ -22,7 +22,6 @@ class GravityAction : public Action
       string m_name;                                             
       double m_radius;
       double m_mu;
-      double m_rotationRate;
       double m_J2;
 
       double accJ2( const vector< double > &state, const char component ) const;

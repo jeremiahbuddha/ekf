@@ -4,43 +4,44 @@
 #include <vector>
 #include <Action.hpp>
 #include <Agent.hpp>
-#include <InitialCondition.hpp>
+#include <OdeintHelper.hpp>
 
 using namespace std;
 
 class Motion {
    /*
-   The motion class is responsible for building the equations of motion for a
-   given body. 
-
+   The motion class is responsible for definingthe equations of motion for a
+   given body, integrating it to any given time, and storing the history of
+   the bodies motion since it's ICs.
    */
    public:
-
       Motion();
-      //Motion( const InitialCondition &ic );
+      Motion( const vector< double > &ic );
       ~Motion();
+
+      // Step to time t
+      void step( double t );
 
       // Add effect of action to motion
       void addAction( const Action &a ); 
 
-      //// Get current time step
-      //double getTime() const;
-      //// Get value of state at current step
-      //vector< double > getState() const;
-      //// Get the partials of Motion wrt a group of Agents
-      //vector< double > getPartials( const AgentGroup &a ) const; 
+      // Get current time step
+      double getTime() const;
+      // Get value of state at current step
+      vector< double > getState() const;
+      // Get the partials of Motion wrt a group of Agents
+      vector< double > getPartials( const AgentGroup &a ) const; 
 
-      // This method defines the Equations of Motion for the odeint integrator
-      void operator() ( const vector< double > &x , 
-                        vector< double > &dxdt , const double t  );
+      // Print the current state to cout
+      void printState() const;
 
    private:
 
-      //double m_time;
-      //vector< double > m_state;                                                  
-      vector< Action > m_actions;
-
-      //void setInitialConditions( InitialCondition ic );
+      double m_time;
+      vector< double > m_state;                                                  
+      vector< const Action* > m_actions;
+      OdeintHelper m_helper;  
+ 
 };
 
 #endif // Include guard

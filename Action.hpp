@@ -19,7 +19,7 @@ class Action
       // passed in vector "acceleration".
       virtual void getAcceleration( vector< double > &acceleration,
                                      double t, 
-                                     const vector< double > &state ) const {}; 
+                                     const vector< double > &state ) const = 0; 
       // Destructor
       virtual ~Action(){};
    private:

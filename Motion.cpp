@@ -1,5 +1,4 @@
 
-
 #include <boost/numeric/odeint.hpp>                                              
 #include <Motion.hpp>
 
@@ -10,18 +9,22 @@
 // Default Constructor
 Motion::
 Motion() 
-   : m_actions()
+   : m_time(),
+     m_state(), 
+     m_actions(),
+     m_helper()
 { 
 }
 
-//// Constructor with set of InitialCondition's                                  
-//Motion::                                                                         
-//Motion( const InitialCondition &ic )                                              
-//   : m_state(),                                                                  
-//     m_actions()                                                                 
-//{                                                                                
-//   setInitialConditions( ic ); 
-//}  
+// Constructor with set of intitial conditions 
+Motion::                                                                         
+Motion( const vector< double > &ic )                                              
+   : m_time( 0 ),
+     m_state( ic ),                                                                  
+     m_actions(),
+     m_helper()                                                                 
+{                                                                                
+}  
 
 // Default Destructor
 Motion::
@@ -36,73 +39,69 @@ void
 Motion::
 addAction( const Action &a )
 {
-   m_actions.push_back( a );
+   const Action* ap = &a; 
+   m_actions.push_back( ap );
+   m_helper.addAction( a );
 }
 
-// Function formatted to work with boost/numeric/odeint. Takes in a dimension    
-// 6 state vector, and returns the first derivative.
+// Step the integration of Motion object to time t
 void                                                                             
 Motion::                                                                         
-operator() (                                                                     
-   const vector< double > &x ,                                                   
-   vector< double > &dxdt ,                                                      
-   double t )                                                                    
-{                                                                                
-   
-   vector< double > accel = { 0, 0, 0 };                                         
-   // Accumulate accelerations from the different actions.                                                     
-   for ( auto &a: m_actions )                                                    
-   {                                                                             
-      a.getAcceleration( accel, t, x );                                          
-   }                                                                             
-                                                                                 
-   // State elements                                                             
-   dxdt[0] = x[3]; // X_dot                                                      
-   dxdt[1] = x[4]; // Y_dot                                                      
-   dxdt[2] = x[5]; // Z_dot                                                      
-   dxdt[3] = accel[0]; // DX_dot                                                 
-   dxdt[4] = accel[1]; // DY_dot                                                 
-   dxdt[5] = accel[2]; // DY_dot                                                 
+step( double t ) 
+{
+   using namespace boost::numeric::odeint;
+
+   // state_type = double
+   typedef runge_kutta_dopri5< vector< double > > stepper_type;
+
+   // Integrate to time t                                                        
+   integrate_adaptive( make_controlled( 1.E-10, 1.E-9, stepper_type() ), m_helper, m_state, 
+                     m_time, t, 1.0 );                                                                                
+   m_time = t;
+
 }  
 
-//// Return the current time step.                                                 
-//double                                                                           
-//Motion::                                                                         
-//getTime() const                                                                  
-//{                                                                                
-//   return m_time;                                                                
-//}    
+// Return the current time step.                                                 
+double                                                                           
+Motion::                                                                         
+getTime() const                                                                  
+{                                                                                
+   return m_time;                                                                
+}    
 
 // Return the state of the motion at the current time step.
-//vector< double >
-//Motion::
-//getState() const
-//{
-//   return m_state;
-//}
+vector< double >
+Motion::
+getState() const
+{
+   return m_state;
+}
 
 // Return the partials of the motion wrt a group of agents at the current
 // time step.
-//vector< double >
-//Motion::
-//getPartials( const AgentGroup &a ) const
-//{
-//   vector< double > nothing = {0};
-//   // NEED TO IMPLEMENT
-//   return nothing;
-//}
+vector< double >
+Motion::
+getPartials( const AgentGroup &a ) const
+{
+   vector< double > nothing = {0};
+   // NEED TO IMPLEMENT
+   return nothing;
+}
+
+void
+Motion::
+printState() const
+{
+   cout << "\n### State at time " << m_time << "\n";                                          
+   cout << setprecision(18) << m_state[0] << "\n";                                 
+   cout << m_state[1] << "\n";                                                     
+   cout << m_state[2] << "\n";                                                     
+   cout << m_state[3] << "\n";                                                     
+   cout << m_state[4] << "\n";                                                     
+   cout << m_state[5] << "\n";    
+}
 
 //=============================================================================  
 //=============================================================================  
 // PRIVATE MEMBERS
 
-// Set current state to the initial conditions                                   
-//void
-//Motion::                                                                         
-//setInitialConditions( InitialCondition &ic )                               
-//{                                                                                
-//                                                                                 
-//   vector< double > state = ic.getValues("state");                               
-//   m_state = state;                                                              
-//                                                                                 
-//} 
