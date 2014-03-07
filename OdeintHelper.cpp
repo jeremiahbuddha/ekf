@@ -33,7 +33,7 @@ operator() (
    // Accumulate accelerations from the different actions.                                                     
    for ( auto ap: m_actions )                                              
    {                                                                       
-      ap->getAcceleration( accel, t, x );                                    
+      ap->getAcceleration( accel, x );                                    
    }                                                                       
    // State elements                                                             
    dxdt[0] = x[3]; // X_dot                                                      

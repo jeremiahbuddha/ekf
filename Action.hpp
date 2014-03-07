@@ -18,7 +18,6 @@ class Action
       // Computes the acceleration due to this action and adds it to the
       // passed in vector "acceleration".
       virtual void getAcceleration( vector< double > &acceleration,
-                                     double t, 
                                      const vector< double > &state ) const = 0; 
       // Destructor
       virtual ~Action(){};

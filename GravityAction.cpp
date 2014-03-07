@@ -5,6 +5,10 @@
 
 using namespace std;
 
+//=============================================================================  
+//=============================================================================  
+// CONSTRUCTORS / DESCTRUCTOR 
+
 // Default Constructor 
 GravityAction::                                                                  
 GravityAction() 
@@ -34,6 +38,10 @@ GravityAction::
 ~GravityAction()
 {
 }                                                 
+
+//=============================================================================  
+//=============================================================================  
+// PUBLIC MEMBERS 
                                                                                  
 // Computes the acceleration due to central body gravitation and the J2  
 // perturbation.
@@ -41,7 +49,6 @@ void
 GravityAction::
 getAcceleration( 
    vector< double > &acceleration, 
-   double t,            
    const vector< double > &state ) const
 { 
    double dist = sqrt( pow( state[0], 2 ) + pow( state[1], 2 ) + pow( state[2], 2 ) );
@@ -49,6 +56,11 @@ getAcceleration(
    acceleration[1] += -m_mu * state[1] / pow( dist, 3 ) * accJ2( state, 'y' ); 
    acceleration[2] += -m_mu * state[2] / pow( dist, 3 ) * accJ2( state, 'z' ); 
 }
+
+
+//=============================================================================  
+//=============================================================================  
+// PRIVATE MEMBERS   
 
 // Computes the J2 gravitational perturbation, by state component.
 double

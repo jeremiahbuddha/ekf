@@ -16,7 +16,7 @@ class GravityAction : public Action
 
       // Computes the acceleration due to this action and adds it to the         
       // passed in vector "acceleration".                                        
-      void getAcceleration( vector< double > &acceleration, double t,                              
+      void getAcceleration( vector< double > &acceleration, 
                              const vector< double > &state ) const override; 
    private:
       string m_name;                                             
