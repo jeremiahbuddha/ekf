@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <Action.hpp>
-#include <Agent.hpp>
+#include <AgentGroup.hpp>
 #include <OdeintHelper.hpp>
 
 using namespace std;
