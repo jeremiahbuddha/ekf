@@ -19,6 +19,13 @@ class Action
       // passed in vector "acceleration".
       virtual void getAcceleration( vector< double > &acceleration,
                                      const vector< double > &state ) const = 0; 
+
+      // Computes the partial derivative of the acceleration terms with respect  
+      // to the state vector (x, y, z, dx, dy, dz) and adds it to the            
+      // passed in vector "partials".                                            
+      virtual void getPartials( vector< double > &partials,                              
+                        const vector< double > &state ) const = 0;
+ 
       // Destructor
       virtual ~Action(){};
    private:

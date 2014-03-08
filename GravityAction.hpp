@@ -17,7 +17,13 @@ class GravityAction : public Action
       // Computes the acceleration due to this action and adds it to the         
       // passed in vector "acceleration".                                        
       void getAcceleration( vector< double > &acceleration, 
-                             const vector< double > &state ) const override; 
+                            const vector< double > &state ) const override; 
+
+      // Computes the partial derivative of the acceleration terms with respect
+      // to the state vector (x, y, z, dx, dy, dz) and adds it to the         
+      // passed in vector "partials".
+      void getPartials( vector< double > &partials, 
+                        const vector< double > &state ) const override;   
    private:
       string m_name;                                             
       double m_radius;
