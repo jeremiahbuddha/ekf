@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <Eigen/Dense>                                                           
 #include <Action.hpp>
 #include <AgentGroup.hpp>
 #include <OdeintHelper.hpp>
@@ -11,7 +12,7 @@ using namespace std;
 
 class Motion {
    /*
-   The motion class is responsible for definingthe equations of motion for a
+   The motion class is responsible for defining the equations of motion for a
    given body, integrating it to any given time, and storing the history of
    the bodies motion since it's ICs.
    */
@@ -24,15 +25,16 @@ class Motion {
       void stepTo( double t );
 
       // Add effect of action to motion
-      void addAction( const Action &a ); 
+      void addAction( Action &a ); 
+      // Activate agents for partials computations
+      void activateAgents( const vector< string > agentNames );
 
       // Get current time step
       double getTime() const;
       // Get value of state at step t ( no arguments defaults to current time )
       vector< double > getState( double t ) const;
-      // Get the partials of Motion wrt a group of Agents
-      vector< double > getPartials( double t, 
-                                    const AgentGroup &a ) const; 
+      // Get the partials of state at step t
+      vector< double > getPartials( double t ) const; 
 
       // Print the current state to cout
       void printState( double t ) const;
@@ -42,10 +44,14 @@ class Motion {
 
       double m_time;
       vector< double > m_state;
+      vector< double > m_stm;
+      vector< string > m_activeAgents;
       double m_step;                            
-      vector< const Action* > m_actions;
+      vector< Action* > m_actions;
       OdeintHelper m_helper;  
       map< double, vector< double > > m_pastStates;
+
+      void initializeStm( vector< string > &activeAgents );
 };
 
 #endif // Include guard

@@ -19,17 +19,3 @@ requested time.
 The *Action* class defines a force capable of effecting the evolution of a
 *Motion* object. 
 
-### Class *Agent*
-
-An *Agent* is any named parameter in the universe which has both a quantity and
-a relationship with other *Agent*s.
-
-### Class *AgentGroup*
-
-A grouping of *Agent*s.
-
-### Class *InitialCondition* 
-
-Used to seed initial numerical values to a *Motion*, *Action* or *Agent*.
-
-

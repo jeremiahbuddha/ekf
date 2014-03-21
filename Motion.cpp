@@ -30,9 +30,12 @@ Motion::
 Motion() 
    : m_time(),
      m_state(), 
+     m_stm(),
+     m_activeAgents( { "X", "Y", "Z", "dX", "dY", "dZ" } ),
      m_step(),
      m_actions(),
-     m_helper( m_actions )
+     m_helper( m_actions, m_activeAgents ),
+     m_pastStates()
 { 
 }
 
@@ -41,10 +44,15 @@ Motion::
 Motion( const vector< double > &ic, double step )                                              
    : m_time( 0 ),
      m_state( ic ),                                                                  
+     m_stm(),
+     m_activeAgents( { "X", "Y", "Z", "dX", "dY", "dZ" } ),                                                           
      m_step( step ),
      m_actions(),
-     m_helper( m_actions )                                                                 
+     m_helper( m_actions, m_activeAgents ), 
+     m_pastStates()                                                              
 {                                                                                
+   cout << "CONSTRUCTOR NUMAGENTS " << m_activeAgents.size() << endl;
+   initializeStm( m_activeAgents );
 }  
 
 // Default Destructor
@@ -58,10 +66,24 @@ Motion::
 // Add an Action 
 void
 Motion::
-addAction( const Action &a )
+addAction( Action &a )
 {
-   const Action* ap = &a; 
+   Action* ap = &a; 
    m_actions.push_back( ap );
+}
+
+// Activate partials tracking for named agents
+void
+Motion::
+activateAgents( const vector< string > agentNames )
+{
+   for ( string a: agentNames )
+   {
+      m_activeAgents.push_back( a );
+   }
+
+   // Re-initialize the STM to make room for new agents
+   initializeStm( m_activeAgents );
 }
 
 // Step the integration of Motion object to time t
@@ -69,14 +91,36 @@ void
 Motion::                                                                         
 stepTo( double t ) 
 {
+   // Set up state initial condition
+   int stmSize = m_stm.size();
+   vector< double > stateAndStm( 6 + stmSize, 0.0 );
+   for ( int i = 0; i < 6 ; ++i )
+   {
+      stateAndStm[i] = m_state[i];
+   }
+   for ( int i = 0; i < stmSize; ++i )                                                
+   {                                                                             
+      stateAndStm[6 + i] = m_stm[i];                                          
+   }
+
    using namespace boost::numeric::odeint;
 
    typedef runge_kutta_dopri5< vector< double > > rkStepper;
 
    // Integrate from current time to time t                                                        
    integrate_const( make_controlled( 1.E-10, 1.E-9, rkStepper() ), 
-                    m_helper, m_state, m_time, t, m_step, 
+                    m_helper, stateAndStm, m_time, t, m_step, 
                     log_state( m_pastStates ) );                
+
+   // Update state, stm, and time
+   for ( int i = 0; i < 6 ; ++i )                                                
+   {                                                                             
+      m_state[i] = stateAndStm[i];                                          
+   }
+   for ( int i = 0; i < stmSize; ++i )                                           
+   {                                                                             
+      m_stm[i] = stateAndStm[6 + i]; 
+   }   
    m_time = t;
 }  
 
@@ -109,7 +153,7 @@ getState( double t ) const
 // time step.
 vector< double >
 Motion::
-getPartials( double t, const AgentGroup &a ) const
+getPartials( double t ) const
 {
    vector< double > nothing = {0};
    // NEED TO IMPLEMENT
@@ -156,3 +200,17 @@ printAllStates() const
 //=============================================================================  
 //=============================================================================  
 // PRIVATE MEMBERS
+void
+Motion::
+initializeStm( vector< string > &activeAgents )
+{
+   // Set the "state" part of the STM ( first 6 columns ) to the identity 
+   // matrix because dx0/dx0 = I
+   int numAgents = activeAgents.size();
+   cout << "INITIALIZESTM NUMAGENTS " << numAgents << endl;
+   m_stm.resize( 6 * numAgents, 0.0 );
+   for ( int i = 0; i < 6 ; ++i )
+   {
+      m_stm[ 6 * i + i ] = 1; 
+   }
+}

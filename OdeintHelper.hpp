@@ -2,6 +2,7 @@
 #define EKF_ODEINTHELPER_INCLUDE_  
 
 #include <vector>
+#include <Eigen/Dense>                                                           
 #include <Action.hpp>
 
 using namespace std;
@@ -9,7 +10,9 @@ using namespace std;
 class OdeintHelper{                                                              
    public:                                                                       
 
-      OdeintHelper( vector< const Action* > &actions );                                                            
+      OdeintHelper();
+      OdeintHelper( vector< Action* > &actions, 
+                    vector< string > &activeAgents );                                                            
       ~OdeintHelper();                                                           
 
       // Allows this class to be called by the odeint solver
@@ -17,7 +20,8 @@ class OdeintHelper{
                         const double t );
                                                        
    private:                                                                      
-      vector< const Action* > &m_actions;
+      vector< Action* > m_actions;
+      vector< string > m_activeAgents; 
 };
 
 #endif // Include guard

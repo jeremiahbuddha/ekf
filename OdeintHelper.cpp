@@ -7,8 +7,18 @@
 // CONSTRUCTORS / DESCTRUCTOR                
 
 OdeintHelper::
-OdeintHelper( vector< const Action* > &actions )
-   : m_actions( actions )
+OdeintHelper()
+   : m_actions(),
+     m_activeAgents()
+{
+}
+
+OdeintHelper::
+OdeintHelper( 
+   vector< Action* > &actions,
+   vector< string > &activeAgents )
+   : m_actions( actions ),
+     m_activeAgents( activeAgents ) 
 {
 }
 
@@ -29,12 +39,21 @@ operator() (
    vector< double > &dxdt ,                                                
    const double t  )                                                       
 {                                                                          
-   vector< double > accel = { 0, 0, 0 };                                   
    // Accumulate accelerations from the different actions.                                                     
+   vector< double > accel( 3, 0.0 );                                   
    for ( auto ap: m_actions )                                              
    {                                                                       
       ap->getAcceleration( accel, x );                                    
    }                                                                       
+
+   // Accumulate partials from the different actions.                                                     
+   int numPartials = 6 * m_activeAgents.size();
+   vector< double > partials( numPartials, 0.0 );                                         
+   for ( auto ap: m_actions )                                                    
+   {                                                                             
+      ap->getPartials( partials, x, m_activeAgents );                                           
+   }    
+
    // State elements                                                             
    dxdt[0] = x[3]; // X_dot                                                      
    dxdt[1] = x[4]; // Y_dot                                                      
@@ -42,4 +61,10 @@ operator() (
    dxdt[3] = accel[0]; // DX_dot                                                 
    dxdt[4] = accel[1]; // DY_dot                                                 
    dxdt[5] = accel[2]; // DY_dot                                           
+
+   // State partials
+   for ( int i = 6; i < numPartials; ++i )
+   {
+      dxdt[i] = partials[i - 6];  
+   }
 }     

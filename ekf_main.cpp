@@ -26,6 +26,15 @@ main()
                            7078136.3, 3.614E-13, 88667.0,                    
                           7.29211585530066E-5, bodyDragTerm );  
    mySc.addAction( myAtm );
+
+   // Set up active agents
+   vector< string > activeAgents = { 
+      "mu", "J2", "Cd", 
+      "X_1", "Y_1", "Z_1",
+      "X_2", "Y_2", "Z_2",
+      "X_3", "Y_3", "Z_3"
+      };
+   mySc.activateAgents( activeAgents );
  
    // Integrate to t = 10
    //mySc.stepTo( 10. );

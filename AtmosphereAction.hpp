@@ -1,8 +1,10 @@
 #ifndef EKF_ATMOSPHEREACTION_INCLUDE_                                                      
 #define EKF_ATMOSPHEREACTION_INCLUDE_   
 
-#include <Action.hpp>
 #include <string>
+#include <vector>
+#include <map>
+#include <Action.hpp>
 
 class AtmosphereAction : public Action
 {
@@ -20,11 +22,11 @@ class AtmosphereAction : public Action
       void getAcceleration( vector< double > &acceleration,            
                              const vector< double > &state ) const override;
 
-      // Computes the partial derivative of the acceleration terms with respect  
-      // to the state vector (x, y, z, dx, dy, dz) and adds it to the            
-      // passed in vector "partials".                                            
+      // Computes the partial derivative of the acceleration terms and owned     
+      // parameters                                                            
       void getPartials( vector< double > &partials,                              
-                        const vector< double > &state ) const override; 
+                        const vector< double > &state,                           
+                        const vector< string >  &activeAgents ) override;
    private:
       string m_name;
       double m_refHeight;
@@ -32,9 +34,13 @@ class AtmosphereAction : public Action
       double m_stepHeight;
       double m_rotation;
       double m_bodyDragTerm;
+      map< string, double > m_evaledPartials;                                    
       
       double adjustedDensity( const vector< double > state ) const;
       double adjustedVelocity( const vector< double > state ) const;
+                                                                                 
+      double getAgentPartial( const string &top, const string &bottom );          
+      void evalPartials( const vector< double > &state );  
 
 };
 

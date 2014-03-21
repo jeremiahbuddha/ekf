@@ -16,7 +16,8 @@ AtmosphereAction()
      m_refDensity(),                                                        
      m_stepHeight(),                                                         
      m_rotation(),                                                           
-     m_bodyDragTerm() 
+     m_bodyDragTerm(),
+     m_evaledPartials()                                                          
 {
 }
 
@@ -34,7 +35,8 @@ AtmosphereAction(
      m_refDensity( refDensity ),                                                               
      m_stepHeight( stepHeight ),                                                               
      m_rotation( rotation ),                                                                 
-     m_bodyDragTerm( bodyDragTerm )                                                              
+     m_bodyDragTerm( bodyDragTerm ), 
+     m_evaledPartials()                                                          
 {                                                                                
 }   
 
@@ -62,79 +64,29 @@ getAcceleration(
    acceleration[2] += dragPrefix * ( state[5] );                                 
 }   
 
-// Computes the partial derivative of the acceleration terms with respect  
-// to the state vector (x, y, z, dx, dy, dz) and adds it to the            
-// passed in vector "partials".                                            
+// Computes the partial derivative of the acceleration terms and owned     
+// parameters   
 void 
 AtmosphereAction::
 getPartials( 
    vector< double > &partials,                              
-   const vector< double > &state ) const
+   const vector< double > &state,                           
+   const vector< string >  &activeAgents )  
 {
-   // Condense variable names to make following equations more legible           
-   double r = sqrt( pow( state[0], 2 ) + pow( state[1], 2 ) + pow( state[2], 2 ) );
-   double X = state[0];                                                          
-   double Y = state[1];                                                          
-   double Z = state[2];                                                          
-   double dX = state[3];                                                         
-   double dY = state[4];                                                         
-   double dZ = state[5];
-   double step = m_stepHeight;                                                         
-   double rot =  m_rotation;
-   double rho = adjustedDensity( state );
-   double vel = adjustedVelocity( state );                                                   
-   double Cd = m_bodyDragTerm;
-   vector< double > &p = partials;                                               
+   // Evaluate the class partial for this state                                  
+   evalPartials( state );                                                        
                                                                                  
-   // Partials of acceleration X component wrt state.                            
-   // d( accX ) / d(x)                                                           
-   p[0] += ( Cd * rho * vel * X * ( dX + rot * Y ) / ( r * step ) +    
-            -Cd * rho * ( -rot * dY + pow( rot, 2 ) * X ) * ( dX + rot * Y ) / vel );
-   // d( accX ) / d(y)                                                           
-   p[1] += ( Cd * rho * vel * Y * ( dX + rot * Y ) / ( r * step ) +    
-            -Cd * rho * ( rot * dX + pow( rot, 2 ) * Y ) * ( dX + rot * Y ) / vel + 
-            -Cd * rho * vel * rot ); 
-   // d( accX ) / d(z)                                                           
-   p[2] += Cd * rho * vel * Z * ( dX + rot * Y ) / ( r * step );
-   // d( accX ) / d(dx)                                                          
-   p[3] += -Cd * rho * pow( dX + rot * Y, 2 ) / vel - Cd * rho * vel ;                                                                    
-   // d( accX ) / d(dy)                                                          
-   p[4] += -Cd * rho * ( dY - rot * X ) * ( dX + rot * Y ) / vel;                                                                    
-   // d( accX ) / d(dz)                                                          
-   p[5] += -Cd * rho * dZ * ( dX + rot * Y ) / vel; 
-
-   // Partials of acceleration Y component wrt state.                            
-   // d( accY ) / d(x)                                                           
-   p[6] += ( Cd * rho * vel * X * ( dY - rot * X ) / ( r * step ) +     
-            -Cd * rho * ( pow( rot, 2 ) * X - rot * dY ) * ( dY - rot * X ) / vel +
-             Cd * rho * vel * rot );
-   // d( accY ) / d(y)                                                           
-   p[7] += ( Cd * rho * vel * Y * ( dY - rot * X ) / ( r * step) +     
-            -Cd * rho * ( rot * dX + pow( rot, 2 ) * Y ) * ( dY - rot * X ) / vel );
-   // d( accY ) / d(z)                                                           
-   p[8] += Cd * rho * vel * Z * ( dY - rot * X ) / ( r * step );
-   // d( accY ) / d(dx)                                                          
-   p[9] += -Cd * rho * ( dY - rot * X ) * ( dX + rot * Y ) / vel;                                                                    
-   // d( accY ) / d(dy)                                                          
-   p[10] += -Cd * rho * pow( dY - rot * X, 2 ) / vel - Cd * rho * vel;                                                                   
-   // d( accY ) / d(dz)                                                          
-   p[11] += -Cd * rho * dZ * ( dY - rot * X ) / vel;                                                                   
-                                                                                 
-   // Partials of acceleration Z component wrt state.                            
-   // d( accZ ) / d(x)                                                           
-   p[12] += ( Cd * rho * vel * dZ * X / (r * step) +                    
-             -Cd * rho * dZ * ( pow( rot, 2 ) * X - rot * dY ) / vel );
-   // d( accZ ) / d(y)                                                           
-   p[13] += ( Cd * rho * vel * dZ * Y / ( r * step ) +                    
-             -Cd * rho * dZ * ( rot * dX + pow( rot, 2 ) * Y) / vel );
-   // d( accZ ) / d(z)                                                           
-   p[14] += Cd * rho * vel * Z * dZ / ( r * step );
-   // d( accZ ) / d(dx)                                                          
-   p[15] += -Cd * rho * dZ * ( dX + rot * Y ) / vel;                                                
-   // d( accZ ) / d(dy)                                                          
-   p[16] += -Cd * rho * dZ * ( dY - rot * X ) / vel;                       
-   // d( accZ ) / d(dz)                                                          
-   p[17] += ( -Cd * rho * pow( dZ, 2 ) / vel ) + ( -Cd * rho * vel ); 
+   // Loop over active agents and get partial values                             
+   int numAgents = activeAgents.size();                                          
+   for ( int i = 0; i < numAgents; ++i )                                         
+   {                                                                             
+      // Request the partial from the i loop with respect to all the active      
+      // agents in j loop                                                        
+      for ( int j = 0; j < numAgents; ++j )                                      
+      {                                                                          
+         partials[i+j] += getAgentPartial( activeAgents[i], activeAgents[j] );    
+      }                                                                          
+   } 
 
 } 
 
@@ -163,3 +115,70 @@ adjustedVelocity( const vector< double > state ) const
                  pow( state[5], 2 ) );                               
 }                                                                                 
 
+double                                                                           
+AtmosphereAction::                                                                  
+getAgentPartial(                                                                 
+   const string &top,                                                          
+   const string &bottom )                                                           
+{                                                                                
+   // Form param search string                                                   
+   string partialRequest = top + " wrt " + bottom;                                
+                                                                                 
+   if( m_evaledPartials.find( partialRequest ) == m_evaledPartials.end() )       
+   {                                                                             
+      // If requested partial is not supported by this action, return 0          
+      return 0.0;                                                                
+   }                                                                             
+   return m_evaledPartials[ partialRequest ];                                    
+}                                                                                
+                                                                                 
+void                                                                             
+AtmosphereAction::                                                                  
+evalPartials( const vector< double > &state )                                    
+{             
+   // Condense variable names to make following equations more legible           
+   double r = sqrt( pow( state[0], 2 ) + pow( state[1], 2 ) + pow( state[2], 2 ) );
+   double X = state[0];                                                          
+   double Y = state[1];                                                          
+   double Z = state[2];                                                          
+   double dX = state[3];                                                         
+   double dY = state[4];                                                         
+   double dZ = state[5];                                                         
+   double step = m_stepHeight;                                                   
+   double rot =  m_rotation;                                                     
+   double rho = adjustedDensity( state );                                        
+   double vel = adjustedVelocity( state );                                       
+   double Cd = m_bodyDragTerm;                                                   
+                                                                                 
+   // Partials of acceleration X component wrt state.                            
+   m_evaledPartials[ "dX wrt X" ] = ( Cd * rho * vel * X * ( dX + rot * Y ) / ( r * step ) +              
+                                     -Cd * rho * ( -rot * dY + pow( rot, 2 ) * X ) * ( dX + rot * Y ) / vel );
+   m_evaledPartials[ "dX wrt Y" ] = ( Cd * rho * vel * Y * ( dX + rot * Y ) / ( r * step ) +              
+                                     -Cd * rho * ( rot * dX + pow( rot, 2 ) * Y ) * ( dX + rot * Y ) / vel +
+                                     -Cd * rho * vel * rot );                                             
+   m_evaledPartials[ "dX wrt Z" ] =   Cd * rho * vel * Z * ( dX + rot * Y ) / ( r * step );                 
+   m_evaledPartials[ "dX wrt dX" ] = -Cd * rho * pow( dX + rot * Y, 2 ) / vel - Cd * rho * vel ;           
+   m_evaledPartials[ "dX wrt dY" ] = -Cd * rho * ( dY - rot * X ) * ( dX + rot * Y ) / vel;                
+   m_evaledPartials[ "dX wrt dZ" ] = -Cd * rho * dZ * ( dX + rot * Y ) / vel;  
+
+   // Partials of acceleration Y component wrt state.                            
+   m_evaledPartials[ "dY wrt X" ] = ( Cd * rho * vel * X * ( dY - rot * X ) / ( r * step ) +              
+                                     -Cd * rho * ( pow( rot, 2 ) * X - rot * dY ) * ( dY - rot * X ) / vel +
+                                      Cd * rho * vel * rot );                                             
+   m_evaledPartials[ "dY wrt Y" ] = ( Cd * rho * vel * Y * ( dY - rot * X ) / ( r * step) +               
+                                     -Cd * rho * ( rot * dX + pow( rot, 2 ) * Y ) * ( dY - rot * X ) / vel );
+   m_evaledPartials[ "dY wrt Z" ] =   Cd * rho * vel * Z * ( dY - rot * X ) / ( r * step );                 
+   m_evaledPartials[ "dY wrt dX" ] = -Cd * rho * ( dY - rot * X ) * ( dX + rot * Y ) / vel;                
+   m_evaledPartials[ "dY wrt dY" ] = -Cd * rho * pow( dY - rot * X, 2 ) / vel - Cd * rho * vel;           
+   m_evaledPartials[ "dY wrt dZ" ] = -Cd * rho * dZ * ( dY - rot * X ) / vel;                             
+                                                                                 
+   // Partials of acceleration Z component wrt state.                            
+   m_evaledPartials[ "dZ wrt X" ] = ( Cd * rho * vel * dZ * X / (r * step) +                             
+                                     -Cd * rho * dZ * ( pow( rot, 2 ) * X - rot * dY ) / vel );          
+   m_evaledPartials[ "dZ wrt Y" ] = ( Cd * rho * vel * dZ * Y / ( r * step ) +                           
+                                     -Cd * rho * dZ * ( rot * dX + pow( rot, 2 ) * Y) / vel );           
+   m_evaledPartials[ "dZ wrt Z" ] =   Cd * rho * vel * Z * dZ / ( r * step );                              
+   m_evaledPartials[ "dZ wrt dX" ] = -Cd * rho * dZ * ( dX + rot * Y ) / vel;                             
+   m_evaledPartials[ "dZ wrt dY" ] = -Cd * rho * dZ * ( dY - rot * X ) / vel;                             
+   m_evaledPartials[ "dZ wrt dZ" ] = ( -Cd * rho * pow( dZ, 2 ) / vel ) + ( -Cd * rho * vel ); 
+}

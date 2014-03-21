@@ -2,6 +2,7 @@
 #define EKF_ACTION_INCLUDE_ 
 
 #include <vector>
+#include <AgentGroup.hpp>
 
 using namespace std;
 
@@ -20,12 +21,11 @@ class Action
       virtual void getAcceleration( vector< double > &acceleration,
                                      const vector< double > &state ) const = 0; 
 
-      // Computes the partial derivative of the acceleration terms with respect  
-      // to the state vector (x, y, z, dx, dy, dz) and adds it to the            
-      // passed in vector "partials".                                            
-      virtual void getPartials( vector< double > &partials,                              
-                        const vector< double > &state ) const = 0;
- 
+      // Computes the partial derivative of the acceleration terms and owned     
+      // parameters                                                              
+      virtual void getPartials( vector < double > &partials,                              
+                                const vector< double > &state,                           
+                                const vector< string >  &activeAgents ) = 0;
       // Destructor
       virtual ~Action(){};
    private:
