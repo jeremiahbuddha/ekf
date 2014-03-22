@@ -37,10 +37,12 @@ and return the partials. Right now, partial calculation flow works like this:
 
 Now I need to:
 
-- Modify my "observer" to also log the STM values.
-- Understand what the STM values are (do they map me just back to the previous
+X Modify my "observer" to also log the STM values.
+X Understand what the STM values are (do they map me just back to the previous
   time step, or all the way back to the epoch?)
-- Get a printStm() method working on my Motion.  
+   * NOTE: I Think they map all the way back to the epoch.
+X Get a printStatePartials() method working on my Motion.  
+- Verify partials at t=10 against python version.
 - Implement the partials of state wrt J2, Cd, etc in my Action classes.
 - Start working on my filter (in the knowlege class)
 - Write some unit tests?

@@ -17,8 +17,8 @@ OdeintHelper::
 OdeintHelper( 
    vector< Action* > &actions,
    vector< string > &activeAgents )
-   : m_actions( actions ),
-     m_activeAgents( activeAgents ) 
+   : m_actions( &actions ),
+     m_activeAgents( &activeAgents ) 
 {
 }
 
@@ -39,19 +39,21 @@ operator() (
    vector< double > &dxdt ,                                                
    const double t  )                                                       
 {                                                                          
+   //cout << "\nAccumulating partials at time: " << t << endl; 
+
    // Accumulate accelerations from the different actions.                                                     
    vector< double > accel( 3, 0.0 );                                   
-   for ( auto ap: m_actions )                                              
+   for ( auto ap: *m_actions )                                              
    {                                                                       
       ap->getAcceleration( accel, x );                                    
    }                                                                       
 
    // Accumulate partials from the different actions.                                                     
-   int numPartials = 6 * m_activeAgents.size();
+   int numPartials = 6 * m_activeAgents->size();
    vector< double > partials( numPartials, 0.0 );                                         
-   for ( auto ap: m_actions )                                                    
+   for ( auto ap: *m_actions )                                                    
    {                                                                             
-      ap->getPartials( partials, x, m_activeAgents );                                           
+      ap->getPartials( partials, x, *m_activeAgents );                                           
    }    
 
    // State elements                                                             
@@ -67,4 +69,11 @@ operator() (
    {
       dxdt[i] = partials[i - 6];  
    }
+}
+
+void
+OdeintHelper::
+howManyActions()
+{
+   cout << "There are " << m_actions->size() << " Actions in the helper" << endl; 
 }     

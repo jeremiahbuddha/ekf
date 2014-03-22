@@ -1,5 +1,6 @@
 
 #include <cmath>                                                                 
+#include <iostream>
 #include <AtmosphereAction.hpp>
 
 using namespace std;
@@ -78,13 +79,16 @@ getPartials(
                                                                                  
    // Loop over active agents and get partial values                             
    int numAgents = activeAgents.size();                                          
-   for ( int i = 0; i < numAgents; ++i )                                         
+   for ( int i = 0; i < 6; ++i )                                         
    {                                                                             
       // Request the partial from the i loop with respect to all the active      
       // agents in j loop                                                        
       for ( int j = 0; j < numAgents; ++j )                                      
       {                                                                          
-         partials[i+j] += getAgentPartial( activeAgents[i], activeAgents[j] );    
+         //cout << "\nAtmosphereAction::getPartials()" << endl                      
+         //     << "Requested Partials: " << activeAgents[i] <<  " wrt " << activeAgents[j] << endl
+         //     << "Value of partials: " << getAgentPartial( activeAgents[i], activeAgents[j] );
+         partials[ i * numAgents + j ] += getAgentPartial( activeAgents[i], activeAgents[j] );    
       }                                                                          
    } 
 
@@ -149,6 +153,11 @@ evalPartials( const vector< double > &state )
    double rho = adjustedDensity( state );                                        
    double vel = adjustedVelocity( state );                                       
    double Cd = m_bodyDragTerm;                                                   
+
+   //cout << "In AtmosphereAction::evalPartials " << endl
+   //     << "Val of vel: " << vel << endl
+   //     << "Val of rho: " << rho << endl
+   //     << "Val of cd: " << Cd << endl;
                                                                                  
    // Partials of acceleration X component wrt state.                            
    m_evaledPartials[ "dX wrt X" ] = ( Cd * rho * vel * X * ( dX + rot * Y ) / ( r * step ) +              

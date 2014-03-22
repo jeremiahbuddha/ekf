@@ -34,24 +34,24 @@ class Motion {
       // Get value of state at step t ( no arguments defaults to current time )
       vector< double > getState( double t ) const;
       // Get the partials of state at step t
-      vector< double > getPartials( double t ) const; 
+      vector< double > getStatePartials( double t ) const; 
 
       // Print the current state to cout
-      void printState( double t ) const;
+      void printStateAndPartials( double t ) const;
       void printAllStates() const;
 
    private:
 
       double m_time;
       vector< double > m_state;
-      vector< double > m_stm;
+      vector< double > m_partials;
       vector< string > m_activeAgents;
       double m_step;                            
       vector< Action* > m_actions;
       OdeintHelper m_helper;  
       map< double, vector< double > > m_pastStates;
 
-      void initializeStm( vector< string > &activeAgents );
+      void initializePartials( vector< string > &activeAgents );
 };
 
 #endif // Include guard

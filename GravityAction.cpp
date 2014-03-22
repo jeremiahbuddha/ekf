@@ -68,18 +68,22 @@ getPartials(
    const vector< double > &state,
    const vector< string >  &activeAgents )  
 {                                                                                
+
    // Evaluate the class partial for this state
    evalPartials( state );
 
    // Loop over active agents and get partial values
    int numAgents = activeAgents.size();
-   for ( int i = 0; i < numAgents; ++i )
+   for ( int i = 0; i < 6; ++i )
    {
       // Request the partial from the i loop with respect to all the active
       // agents ( j loop ) 
       for ( int j = 0; j < numAgents; ++j )
       {
-         partials[i+j] += getAgentPartial( activeAgents[i], activeAgents[j] );
+         //cout << "\nGravityAction::getPartials()" << endl
+         //     << "Requested Partials: " << activeAgents[i] <<  " wrt " << activeAgents[j] << endl
+         //     << "Value of partials: " << getAgentPartial( activeAgents[i], activeAgents[j] );
+         partials[ i * numAgents + j ] += getAgentPartial( activeAgents[i], activeAgents[j] );
       }
    }
 }  
@@ -146,7 +150,6 @@ evalPartials( const vector< double > &state )
    double r5 = pow( r, 5 );                                                      
    double R_r2 = pow( R / r, 2 );                                                
    double Z_r2 = pow( Z / r, 2 );                                                
-   vector< double > p;                                               
                                                                                  
    // Partials of acceleration X component wrt state.                            
    m_evaledPartials[ "dX wrt X" ] = ( - mu / r3 * ( 1 - ( 3 / 2 ) * J2 * R_r2 * ( 5 * Z_r2 - 1.) ) +      

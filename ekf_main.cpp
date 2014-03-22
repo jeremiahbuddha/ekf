@@ -21,7 +21,7 @@ main()
    double bodyArea = 3.0; // m**2
    double bodyMass = 970.0; // kg
    double bodyCd = 2.0; 
-   double bodyDragTerm = ( 1 / 2 ) * bodyCd * ( bodyArea / bodyMass );   
+   double bodyDragTerm = ( 1.0 / 2.0 ) * bodyCd * ( bodyArea / bodyMass );   
    AtmosphereAction myAtm( "Earth Atmosphere", 
                            7078136.3, 3.614E-13, 88667.0,                    
                           7.29211585530066E-5, bodyDragTerm );  
@@ -37,13 +37,12 @@ main()
    mySc.activateAgents( activeAgents );
  
    // Integrate to t = 10
-   //mySc.stepTo( 10. );
-   //mySc.printState( 5. );
-   //mySc.printState( 10. );
+   mySc.stepTo( 10. );
+   mySc.printStateAndPartials( 10. );
 
    // Integrate to t = 200
-   mySc.stepTo( 200. );
-   mySc.printState( 200. );  
+   //mySc.stepTo( 200. );
+   //mySc.printState( 200. );  
 
    return 0;
 }

@@ -18,10 +18,11 @@ class OdeintHelper{
       // Allows this class to be called by the odeint solver
       void operator() ( const vector< double > &x, vector< double > &dxdt, 
                         const double t );
+      void howManyActions();
                                                        
    private:                                                                      
-      vector< Action* > m_actions;
-      vector< string > m_activeAgents; 
+      vector< Action* > *m_actions;
+      vector< string > *m_activeAgents; 
 };
 
 #endif // Include guard
