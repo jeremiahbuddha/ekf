@@ -1,5 +1,6 @@
 
 #include <boost/numeric/odeint.hpp>                                              
+#include <cmath>
 #include <Motion.hpp>
 
 //=============================================================================  
@@ -184,14 +185,27 @@ printStateAndPartials( double t ) const
    if ( search != m_pastStates.end() )                                           
    {                                                                             
       vector< double > state = search->second;                                                     
+
       cout << "\n### State at time " << t << endl;                                  
-      cout << setprecision(18) << state[0] << endl;                               
-      for ( int i = 1; i < state.size(); ++i )
+      cout << "X: " << setprecision(18) << state[0] << endl;                               
+      cout << "Y: " << state[1] << endl;                          
+      cout << "Z: " << state[2] << endl;                          
+      cout << "dX: " << state[3] << endl;                          
+      cout << "dY: " << state[4] << endl;                          
+      cout << "dZ: " << state[5] << endl;                          
+
+      cout << "\n### STM at time " << t << endl;                               
+      int stmSize = state.size() - 6;
+      int numAgents = sqrt( stmSize );
+      for ( int i = 0; i < stmSize; ++i )
       { 
-         cout << state[i] << endl;  
+         cout << "   " << state[6 + i]; 
+         if ( ( i > 0 ) && (i % numAgents == 0 ) )
+         {
+            cout << endl;
+         }
       }
    }  
-                                                                           
    else                                                                          
    {                                                                             
       cout << "No state at time " << t << "." << endl;                           
@@ -219,10 +233,11 @@ initializePartials( vector< string > &activeAgents )
 {
    // Reset the partials vector to all zeros
    fill( m_partials.begin(), m_partials.end(), 0.0 );
+
    // Set the state partials from t0 to t0, i.e. the identity matrix
    int numAgents = activeAgents.size();
-   m_partials.resize( 6 * numAgents, 0.0 );
-   for ( int i = 0; i < 6 ; ++i )
+   m_partials.resize( numAgents * numAgents, 0.0 );
+   for ( int i = 0; i < numAgents ; ++i )
    {
       m_partials[ numAgents * i + i ] = 1; 
    }

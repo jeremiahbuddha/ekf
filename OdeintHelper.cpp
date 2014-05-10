@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <eigen/dense>
 #include <OdeintHelper.hpp>
 
 //=============================================================================  
@@ -49,13 +50,69 @@ operator() (
    }                                                                       
 
    // Accumulate partials from the different actions.                                                     
-   int numPartials = 6 * m_activeAgents->size();
+   int numAgents = m_activeAgents->size();
+   int numPartials = numAgents * numAgents;
    vector< double > partials( numPartials, 0.0 );                                         
    for ( auto ap: *m_actions )                                                    
    {                                                                             
       ap->getPartials( partials, x, *m_activeAgents );                                           
    }    
 
+   // Write the paramter partials into a matrix
+   Eigen::MatrixXd A( numAgents, numAgents ); 
+   A = Eigen::MatrixXd::Zero( numAgents, numAgents );
+   for ( int i = 0; i < numAgents ; ++i )
+   { 
+      for ( int j = 0; j < numAgents; ++j )
+      {
+         A(i, j) = partials[ j + i * numAgents ]; 
+      }
+   }
+
+   cout << "\n### A at time " << t << endl;                                    
+   for ( int i = 0; i < numAgents; ++i )                                         
+   {                                                                             
+      for ( int j = 0; j < numAgents; ++j )                                      
+      {                                                                          
+          cout << "   " << A( i, j );                                          
+      }                                                                          
+      cout << endl;                                                              
+   }     
+
+
+   // Write the current STM into a matrix
+   Eigen::MatrixXd stm( numAgents, numAgents );                                                   
+   for ( int i = 0; i < numAgents ; ++i )                                                
+   {                                                                             
+      for ( int j = 0; j < numAgents; ++j )                                      
+      {                                                                          
+         stm(i, j) = x[ 6 + j + i * numAgents ]; 
+      }                                                                          
+   }        
+
+   cout << "\n### STM at time " << t << endl;                      
+   for ( int i = 0; i < numAgents; ++i )                                         
+   {                                                                             
+      for ( int j = 0; j < numAgents; ++j )                                      
+      {                                                                          
+          cout << "   " << stm( i, j );                                         
+      }                                                                          
+      cout << endl;                                                              
+   } 
+
+   // Multiply the current STM times A partials to get derivative of STM
+   Eigen::MatrixXd dStm = A * stm;
+
+   cout << "\n### Derivative of STM at time " << t << endl;                                 
+   for ( int i = 0; i < numAgents; ++i )                                        
+   {                                                                          
+      for ( int j = 0; j < numAgents; ++j )
+      {
+          cout << "   " << dStm( i, j );                                          
+      }                                                                       
+      cout << endl;
+   }    
+ 
    // State elements                                                             
    dxdt[0] = x[3]; // X_dot                                                      
    dxdt[1] = x[4]; // Y_dot                                                      
@@ -65,9 +122,10 @@ operator() (
    dxdt[5] = accel[2]; // DY_dot                                           
 
    // State partials
-   for ( int i = 6; i < numPartials; ++i )
+   for ( int i = 0; i < numAgents; ++i )
    {
-      dxdt[i] = partials[i - 6];  
+      for (int j = 0; j < numAgents; ++j ) 
+      dxdt[ 6 + j + i * numAgents ] = dStm(i,j);  
    }
 }
 

@@ -79,7 +79,7 @@ getPartials(
                                                                                  
    // Loop over active agents and get partial values                             
    int numAgents = activeAgents.size();                                          
-   for ( int i = 0; i < 6; ++i )                                         
+   for ( int i = 0; i < numAgents; ++i )                                         
    {                                                                             
       // Request the partial from the i loop with respect to all the active      
       // agents in j loop                                                        
@@ -158,7 +158,11 @@ evalPartials( const vector< double > &state )
    //     << "Val of vel: " << vel << endl
    //     << "Val of rho: " << rho << endl
    //     << "Val of cd: " << Cd << endl;
-                                                                                 
+
+   m_evaledPartials[ "X wrt dX" ] = 1;
+   m_evaledPartials[ "Y wrt dY" ] = 1;                                           
+   m_evaledPartials[ "Z wrt dZ" ] = 1;                                           
+                                                                                
    // Partials of acceleration X component wrt state.                            
    m_evaledPartials[ "dX wrt X" ] = ( Cd * rho * vel * X * ( dX + rot * Y ) / ( r * step ) +              
                                      -Cd * rho * ( -rot * dY + pow( rot, 2 ) * X ) * ( dX + rot * Y ) / vel );

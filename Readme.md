@@ -25,14 +25,14 @@ Alright, so today I finished cleaning up how the Action classes compute
 and return the partials. Right now, partial calculation flow works like this:
 
 - Indicate desire to integrate by calling Motion::stepTo()
-- Motion::stepTo creates a vector called stateAndStm and passes it into OdeintHelper
-- OdeintHelper creates a vector called accel, and loops over all actions and collects
-  the accel values
-- OdeintHelper creates a vector called partials, and loops over all actions and
-  collects the partial values. NOTE that the arrangement of the partials values
-  in the partials vector is the same order they appear in the "activeAgents" 
-  vector.
-- OdeintHelper takes the accel and partials values and puts them returns them
+- Motion::stepTo creates a vector called stateAndStm that has the current state
+  and STM value, and passes it into OdeintHelper
+- OdeintHelper works iteratively with the integrator. Give the current state,
+  it loops over all actions and collects the accel values. Given the current 
+  STM, it also loops over all the actions and gets the parameter partials. It 
+  compiles all the partials into an A matrix, and performs A * currentSTM to get 
+  the derivative of the STM.
+- OdeintHelper takes the accel and derivative of STM and puts them returns them
   to the integrator at every time step.
 
 Now I need to:
@@ -42,7 +42,10 @@ X Understand what the STM values are (do they map me just back to the previous
   time step, or all the way back to the epoch?)
    * NOTE: I Think they map all the way back to the epoch.
 X Get a printStatePartials() method working on my Motion.  
-- Verify partials at t=10 against python version.
+X Multiply the "partials" matrix in OdeintHelper ( which is really the A 
+  matrix ) by the STM part of the state vector to get the derivative of
+  the STM.
+X Verify partials at t=10 against python version.
 - Implement the partials of state wrt J2, Cd, etc in my Action classes.
 - Start working on my filter (in the knowlege class)
 - Write some unit tests?

@@ -74,7 +74,7 @@ getPartials(
 
    // Loop over active agents and get partial values
    int numAgents = activeAgents.size();
-   for ( int i = 0; i < 6; ++i )
+   for ( int i = 0; i < numAgents; ++i )
    {
       // Request the partial from the i loop with respect to all the active
       // agents ( j loop ) 

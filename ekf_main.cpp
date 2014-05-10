@@ -38,7 +38,7 @@ main()
  
    // Integrate to t = 10
    mySc.stepTo( 10. );
-   mySc.printStateAndPartials( 10. );
+   //mySc.printStateAndPartials( 10. );
 
    // Integrate to t = 200
    //mySc.stepTo( 200. );
