@@ -17,7 +17,14 @@ requested time.
 ### Class *Action*
 
 The *Action* class defines a force capable of effecting the evolution of a
-*Motion* object. 
+*Motion* object. It is the responsibility of the Action classes to define
+the state partial derivatives! - as well as the partial derivatives of
+any quantities they define with respect to all dependent parameters. 
+
+NOTE: Google C++ Style says to comment on class definintions (not 
+declarations), but I dont think that makes sense here. I will provide
+a high-level overview of the class as a preamble comment, and then
+add comment documentation to class declarations (hpp).
 
 03/21/2014:
 
@@ -37,15 +44,15 @@ and return the partials. Right now, partial calculation flow works like this:
 
 Now I need to:
 
-X Modify my "observer" to also log the STM values.
-X Understand what the STM values are (do they map me just back to the previous
-  time step, or all the way back to the epoch?)
-   * NOTE: I Think they map all the way back to the epoch.
-X Get a printStatePartials() method working on my Motion.  
-X Multiply the "partials" matrix in OdeintHelper ( which is really the A 
-  matrix ) by the STM part of the state vector to get the derivative of
-  the STM.
-X Verify partials at t=10 against python version.
+- X Modify my "observer" to also log the STM values.
+- X Understand what the STM values are (do they map me just back to the previous
+    time step, or all the way back to the epoch?) They map all the way back to 
+    the epoch.
+- X Get a printStatePartials() method working on my Motion.  
+- X Multiply the "partials" matrix in OdeintHelper ( which is really the A 
+    matrix ) by the STM part of the state vector to get the derivative of
+    the STM.
+- X Verify partials at t=10 against python version.
 - Implement the partials of state wrt J2, Cd, etc in my Action classes.
 - Start working on my filter (in the knowlege class)
 - Write some unit tests?
