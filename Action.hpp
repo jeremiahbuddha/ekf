@@ -30,7 +30,7 @@ class Action
       virtual ~Action(){};
 
    protected:
-     bool m_debug = false;
+     const bool m_debug = false;
 
    private:
 

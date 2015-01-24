@@ -3,7 +3,7 @@
 ///
 /// @file    AtmosphereAction.cpp
 /// @brief   Computes state accelerations and partials due to the
-///          interaction of a spacecraft with a planetary atmosphere.
+///          interaction of an agent with a planetary atmosphere.
 /// @author  Jonathon Smith <jonathon.j.smith@gmail.com>
 /// @date    January 24, 2015
 ///
@@ -58,8 +58,8 @@ AtmosphereAction::
 {
 }
 
-//=============================================================================
-//=============================================================================
+//=====================================================================
+//=====================================================================
 // PUBLIC MEMBERS
 
 // Computes the acceleration due to drag from a planetary body
@@ -246,6 +246,5 @@ evalPartials( const vector< double > &state )
 ///   - Exponential atmosphere reference density
 ///   - Exponential atmosphere step height
 ///   - Planetary rotation
-///   - Spacecraft body drag term
-
+///   - Agent body drag term
 }

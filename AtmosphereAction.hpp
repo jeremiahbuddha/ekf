@@ -3,7 +3,7 @@
 ///
 /// @file    AtmosphereAction.hpp
 /// @brief   Computes state accelerations and partials due to the
-///          interaction of a spacecraft with a planetary atmosphere.
+///          interaction of an agent with a planetary atmosphere.
 /// @author  Jonathon Smith <jonathon.j.smith@gmail.com>
 /// @date    January 24, 2015
 ///
@@ -21,7 +21,7 @@
 #include <Action.hpp>
 
 /// @brief Compute state accelerations and partial derivates due to
-/// the interaction of a spacecraft and planetary atmosphere.
+/// the interaction of an agent and planetary atmosphere.
 ///
 /// This is a resource class for Motion, used to compute the
 /// accelerations and partial derivatives wrt a planetary atmosphere
@@ -39,7 +39,7 @@
 ///   - Exponential atmosphere reference density
 ///   - Exponential atmosphere step height
 ///   - Planetary rotation
-///   - Spacecraft body drag term
+///   - Agent body drag term
 ///
 class AtmosphereAction : public Action
 {
@@ -68,6 +68,10 @@ class AtmosphereAction : public Action
   double m_rotation;
   double m_bodyDragTerm;
   map< string, double > m_evaledPartials;
+
+  vector< string > m_agentsOwned = { "X", "Y", "Z", "dX", "dY", "dZ",
+                                     "h_ref", "rho_ref", "step", "rot",
+                                     "Cd" };
 
   double adjustedDensity( const vector< double > state ) const;
   double adjustedVelocity( const vector< double > state ) const;
