@@ -13,8 +13,8 @@ main()
    Motion mySc( ic, 1 );
 
    // Set up a GravityAction and add to motion
-   GravityAction myGrav( "Earth", 6378136.3, 3.986004415E+14,
-                          1.082626925638815E-3 );
+   std::shared_ptr< Action > myGrav ( new GravityAction(
+     "Earth", 6378136.3, 3.986004415E+14, 1.082626925638815E-3 ) );
    mySc.addAction( myGrav );
 
    // Set up a AtmosphereAction and add to motion
@@ -22,9 +22,9 @@ main()
    double bodyMass = 970.0; // kg
    double bodyCd = 2.0;
    double bodyDragTerm = ( 1.0 / 2.0 ) * bodyCd * ( bodyArea / bodyMass );
-   AtmosphereAction myAtm( "Earth Atmosphere",
-                           7078136.3, 3.614E-13, 88667.0,
-                          7.29211585530066E-5, bodyDragTerm );
+   std::shared_ptr< Action > myAtm ( new AtmosphereAction(
+     "Earth Atmosphere", 7078136.3, 3.614E-13, 88667.0, 7.29211585530066E-5,
+      bodyDragTerm ) );
    mySc.addAction( myAtm );
 
    // Set up active agents
@@ -38,7 +38,7 @@ main()
 
    // Integrate to t = 10
    mySc.stepTo( 10. );
-   //mySc.printStateAndPartials( 10. );
+   mySc.printStateAndPartials( 10. );
 
    // Integrate to t = 200
    //mySc.stepTo( 200. );

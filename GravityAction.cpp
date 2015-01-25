@@ -15,7 +15,6 @@
 // ekf Library
 #include <GravityAction.hpp>
 
-using namespace std;
 //=====================================================================
 //=====================================================================
 // CONSTRUCTORS / DESCTRUCTOR
@@ -34,7 +33,7 @@ GravityAction()
 // Constructor for standard solar system central body
 GravityAction::
 GravityAction(
-    const string name,
+    const std::string name,
     const double radius,
     const double mu,
     const double J2 )
@@ -61,8 +60,8 @@ GravityAction::
 void
 GravityAction::
 getAcceleration(
-    vector< double > &acceleration,
-    const vector< double > &state ) const
+    std::vector< double > &acceleration,
+    const std::vector< double > &state ) const
 {
   double dist = sqrt( pow( state[0], 2 ) + pow( state[1], 2 ) +
                 pow( state[2], 2 ) );
@@ -76,9 +75,9 @@ getAcceleration(
 void
 GravityAction::
 getPartials(
-    vector< double > &partials,
-    const vector< double > &state,
-    const vector< string >  &activeAgents )
+    std::vector< double > &partials,
+    const std::vector< double > &state,
+    const std::vector< std::string >  &activeAgents )
 {
   // Evaluate the class partial for this state
   evalPartials( state );
@@ -93,11 +92,11 @@ getPartials(
     {
       if (m_debug)
       {
-        cout << "\nGravityAction::getPartials()" << endl
-             << "Requested Partials: " << activeAgents[i] <<  " wrt "
-             << activeAgents[j] << endl
-             << "Value of partials: "
-             << getAgentPartial( activeAgents[i], activeAgents[j] );
+        std::cout << "\nGravityAction::getPartials()" << std::endl
+                  << "Requested Partials: " << activeAgents[i] <<  " wrt "
+                  << activeAgents[j] << std::endl
+                  << "Value of partials: "
+                  << getAgentPartial( activeAgents[i], activeAgents[j] );
       }
       partials[ i * numAgents + j ] += getAgentPartial( activeAgents[i],
                                                         activeAgents[j] );
@@ -113,7 +112,7 @@ getPartials(
 double
 GravityAction::
 accJ2(
-    const vector< double > &state,
+    const std::vector< double > &state,
     const char component ) const
 {
   double dist = sqrt( pow( state[0], 2 ) + pow( state[1], 2 ) +
@@ -130,16 +129,22 @@ accJ2(
     return ( 1.0 - 1.5 * m_J2 * pow( ( m_radius / dist ), 2 ) *
            ( 5 * pow( ( state[2] / dist ), 2 ) - 3 ) );
   }
+  else
+  {
+     std::cout << "Error in request for J2 perturbation." << std::endl
+               << "Component " << component << " not recognized" << std::endl;
+     throw;
+  }
 }
 
 double
 GravityAction::
 getAgentPartial(
-    const string &top,
-    const string &bottom )
+    const std::string &top,
+    const std::string &bottom )
 {
   // Form param search string
-  string partialRequest = top + " wrt " + bottom;
+  std::string partialRequest = top + " wrt " + bottom;
 
   if( m_evaledPartials.find( partialRequest ) == m_evaledPartials.end() )
   {
@@ -151,7 +156,7 @@ getAgentPartial(
 
 void
 GravityAction::
-evalPartials( const vector< double > &state )
+evalPartials( const std::vector< double > &state )
 {
   // Condense variable names to make following equations more legible
   double r = sqrt( pow( state[0], 2 ) + pow( state[1], 2 ) +
@@ -162,9 +167,6 @@ evalPartials( const vector< double > &state )
   double X = state[0];
   double Y = state[1];
   double Z = state[2];
-  double dX = state[3];
-  double dY = state[4];
-  double dZ = state[5];
   double r3 = pow( r, 3 );
   double r5 = pow( r, 5 );
   double R_r2 = pow( R / r, 2 );
@@ -201,12 +203,7 @@ evalPartials( const vector< double > &state )
     ( 7 * Z_r2 - 5 ) ) );
 
   /// @todo implement remaining partials:
-  ///   - Cartesian state X-component
-  ///   - Cartesian state Y-component
-  ///   - Cartesian state Z-component
-  ///   - Cartesian state dX-component
-  ///   - Cartesian state dY-component
-  ///   - Cartesian state dZ-component
+  ///   - Cartesian state X, Y, Z, dX, dY, dZ components
   ///   - Gravitational body radius
   ///   - Gravitational body GM
   ///   - Gravitational body J2 term

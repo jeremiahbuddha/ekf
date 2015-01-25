@@ -12,12 +12,11 @@
 #define EKF_ODEINTHELPER_HEADER_GUARD
 
 // C++ Standard Library
+#include <string>
 #include <vector>
 
 // ekf Library
 #include <Action.hpp>
-
-using namespace std;
 
 /// @brief Interface class between ekf and boost::odeint.
 ///
@@ -28,18 +27,20 @@ class OdeintHelper{
  public:
 
   OdeintHelper();
-  OdeintHelper( vector< Action* > &actions,
-                vector< string > &activeAgents );
+  OdeintHelper( std::vector< std::shared_ptr< Action > >& actions,
+                std::vector< std::string >& activeAgents );
  ~OdeintHelper();
 
   // Allows this class to be called by the odeint solver
-  void operator() ( const vector< double > &x, vector< double > &dxdt,
+  void operator() ( const std::vector< double >& x,
+                    std::vector< double >& dxdt,
                     const double t );
   void howManyActions();
 
  private:
-  vector< Action* >* m_actions;
-  vector< string >* m_activeAgents;
+  std::vector< std::shared_ptr< Action > >* m_actions;
+  std::vector< std::string >* m_activeAgents;
+  /// @todo this needs to go eventually
   const bool m_debug = false;
 };
 

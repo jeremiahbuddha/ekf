@@ -29,8 +29,8 @@ OdeintHelper()
 
 OdeintHelper::
 OdeintHelper(
-    vector< Action* > &actions,
-    vector< string > &activeAgents )
+    std::vector< std::shared_ptr< Action > >& actions,
+    std::vector< std::string >& activeAgents )
     : m_actions( &actions ),
       m_activeAgents( &activeAgents )
 {
@@ -50,12 +50,12 @@ OdeintHelper::
 void
 OdeintHelper::
 operator() (
-    const vector< double > &x ,
-    vector< double > &dxdt ,
+    const std::vector< double > &x ,
+    std::vector< double > &dxdt ,
     const double t  )
 {
   // Accumulate accelerations from the different actions.
-  vector< double > accel( 3, 0.0 );
+  std::vector< double > accel( 3, 0.0 );
   for ( auto ap: *m_actions )
   {
     ap->getAcceleration( accel, x );
@@ -64,7 +64,7 @@ operator() (
   // Accumulate partials from the different actions.
   int numAgents = m_activeAgents->size();
   int numPartials = numAgents * numAgents;
-  vector< double > partials( numPartials, 0.0 );
+  std::vector< double > partials( numPartials, 0.0 );
   for ( auto ap: *m_actions )
   {
     ap->getPartials( partials, x, *m_activeAgents );
@@ -83,14 +83,14 @@ operator() (
 
   if ( m_debug )
   {
-    cout << "\n### A at time " << t << endl;
+    std::cout << "\n### A at time " << t << std::endl;
     for ( int i = 0; i < numAgents; ++i )
     {
       for ( int j = 0; j < numAgents; ++j )
       {
-        cout << "   " << A( i, j );
+        std::cout << "   " << A( i, j );
       }
-      cout << endl;
+      std::cout << std::endl;
     }
   }
 
@@ -106,14 +106,14 @@ operator() (
 
   if ( m_debug )
   {
-    cout << "\n### STM at time " << t << endl;
+    std::cout << "\n### STM at time " << t << std::endl;
     for ( int i = 0; i < numAgents; ++i )
     {
       for ( int j = 0; j < numAgents; ++j )
       {
-        cout << "   " << stm( i, j );
+        std::cout << "   " << stm( i, j );
       }
-      cout << endl;
+      std::cout << std::endl;
     }
   }
 
@@ -122,14 +122,14 @@ operator() (
 
   if ( m_debug )
   {
-    cout << "\n### Derivative of STM at time " << t << endl;
+    std::cout << "\n### Derivative of STM at time " << t << std::endl;
     for ( int i = 0; i < numAgents; ++i )
     {
       for ( int j = 0; j < numAgents; ++j )
       {
-        cout << "   " << dStm( i, j );
+        std::cout << "   " << dStm( i, j );
       }
-      cout << endl;
+      std::cout << std::endl;
     }
   }
 
@@ -154,6 +154,6 @@ void
 OdeintHelper::
 howManyActions()
 {
-  cout << "There are " << m_actions->size()
-       << " Actions in the helper" << endl;
+  std::cout << "There are " << m_actions->size()
+       << " Actions in the helper" << std::endl;
 }

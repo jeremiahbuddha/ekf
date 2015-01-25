@@ -15,7 +15,6 @@
 // ekf Library
 #include <AtmosphereAction.hpp>
 
-using namespace std;
 //=====================================================================
 //=====================================================================
 // CONSTRUCTORS / DESCTRUCTOR
@@ -36,7 +35,7 @@ AtmosphereAction()
 // Constructor for standard planetary atmosphere
 AtmosphereAction::
 AtmosphereAction(
-    const string name,
+    const std::string name,
     double refHeight,
     double refDensity,
     double stepHeight,
@@ -67,8 +66,8 @@ AtmosphereAction::
 void
 AtmosphereAction::
 getAcceleration(
-    vector< double > &acceleration,
-    const vector< double > &state ) const
+    std::vector< double >& acceleration,
+    const std::vector< double >& state ) const
 {
   double dragPrefix =  - m_bodyDragTerm * adjustedDensity( state )
                        * adjustedVelocity( state );
@@ -83,9 +82,9 @@ getAcceleration(
 void
 AtmosphereAction::
 getPartials(
-    vector< double > &partials,
-    const vector< double > &state,
-    const vector< string >  &activeAgents )
+    std::vector< double > &partials,
+    const std::vector< double > &state,
+    const std::vector< std::string >  &activeAgents )
 {
   // Evaluate the class partial for this state
   evalPartials( state );
@@ -100,11 +99,11 @@ getPartials(
     {
       if (m_debug)
       {
-        cout << "\nAtmosphereAction::getPartials()" << endl
-             << "Requested Partials: " << activeAgents[i] <<  " wrt "
-             << activeAgents[j] << endl
-             << "Value of partials: "
-             << getAgentPartial( activeAgents[i], activeAgents[j] );
+        std::cout << "\nAtmosphereAction::getPartials()" << std::endl
+                  << "Requested Partials: " << activeAgents[i] <<  " wrt "
+                  << activeAgents[j] << std::endl
+                  << "Value of partials: "
+                  << getAgentPartial( activeAgents[i], activeAgents[j] );
       }
       partials[ i * numAgents + j ] += getAgentPartial( activeAgents[i],
                                                         activeAgents[j] );
@@ -119,7 +118,7 @@ getPartials(
 // Get the atmospheric density at current state
 double
 AtmosphereAction::
-adjustedDensity( const vector< double > state ) const
+adjustedDensity( const std::vector< double > state ) const
 {
   double dist = sqrt( pow( state[0], 2 ) + pow( state[1], 2 ) +
                 pow( state[2], 2 ) );
@@ -130,7 +129,7 @@ adjustedDensity( const vector< double > state ) const
 // Get the atmospheric relative velocity at current state
 double
 AtmosphereAction::
-adjustedVelocity( const vector< double > state ) const
+adjustedVelocity( const std::vector< double > state ) const
 {
   return sqrt( pow( state[3] + state[1] * m_rotation, 2 ) +
                pow( state[4] - state[0] * m_rotation, 2 ) +
@@ -140,11 +139,11 @@ adjustedVelocity( const vector< double > state ) const
 double
 AtmosphereAction::
 getAgentPartial(
-    const string &top,
-    const string &bottom )
+    const std::string &top,
+    const std::string &bottom )
 {
   // Form param search string
-  string partialRequest = top + " wrt " + bottom;
+  std::string partialRequest = top + " wrt " + bottom;
 
   if( m_evaledPartials.find( partialRequest ) == m_evaledPartials.end() )
   {
@@ -156,7 +155,7 @@ getAgentPartial(
 
 void
 AtmosphereAction::
-evalPartials( const vector< double > &state )
+evalPartials( const std::vector< double > &state )
 {
   // Condense variable names to make following equations more legible
   double r = sqrt( pow( state[0], 2 ) + pow( state[1], 2 ) +
@@ -175,10 +174,10 @@ evalPartials( const vector< double > &state )
 
   if (m_debug)
   {
-    cout << "In AtmosphereAction::evalPartials " << endl
-         << "Val of vel: " << vel << endl
-         << "Val of rho: " << rho << endl
-         << "Val of cd: " << Cd << endl;
+    std::cout << "In AtmosphereAction::evalPartials " << std::endl
+              << "Val of vel: " << vel << std::endl
+              << "Val of rho: " << rho << std::endl
+              << "Val of cd: " << Cd << std::endl;
   }
 
   m_evaledPartials[ "X wrt dX" ] = 1;
@@ -236,12 +235,6 @@ evalPartials( const vector< double > &state )
    -Cd * rho * pow( dZ, 2 ) / vel ) + ( -Cd * rho * vel );
 
 /// @todo implement remaining partials:
-///   - Cartesian state X-component
-///   - Cartesian state Y-component
-///   - Cartesian state Z-component
-///   - Cartesian state dX-component
-///   - Cartesian state dY-component
-///   - Cartesian state dZ-component
 ///   - Exponential atmosphere referece height
 ///   - Exponential atmosphere reference density
 ///   - Exponential atmosphere step height

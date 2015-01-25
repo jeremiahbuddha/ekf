@@ -29,12 +29,7 @@
 ///
 /// This class is responsible for computing partial derivatives of the
 /// following paramters:
-///   - Cartesian state X-component
-///   - Cartesian state Y-component
-///   - Cartesian state Z-component
-///   - Cartesian state dX-component
-///   - Cartesian state dY-component
-///   - Cartesian state dZ-component
+///   - Cartesian state X, Y, Z, dX, dY, dZ components
 ///   - Exponential atmosphere referece height
 ///   - Exponential atmosphere reference density
 ///   - Exponential atmosphere step height
@@ -45,39 +40,41 @@ class AtmosphereAction : public Action
 {
  public:
   AtmosphereAction();
-  AtmosphereAction( const string name, double refHeight, double refDensity,
+  AtmosphereAction( const std::string name, double refHeight, double refDensity,
                     double stepHeight, double rotation, double bodyDragTerm );
 
  ~AtmosphereAction() override;
 
   // Computes the acceleration due to this action and adds it to
   // the passed in vector "acceleration".
-  void getAcceleration( vector< double > &acceleration,
-                        const vector< double > &state ) const override;
+  void getAcceleration( std::vector< double > &acceleration,
+                        const std::vector< double > &state ) const override;
 
   // Computes the partial derivative of the acceleration terms and
   // owned parameters
-  void getPartials( vector< double > &partials,
-                    const vector< double > &state,
-                    const vector< string >  &activeAgents ) override;
+  void getPartials( std::vector< double > &partials,
+                    const std::vector< double > &state,
+                    const std::vector< std::string >  &activeAgents ) override;
  private:
-  string m_name;
+  std::string m_name;
   double m_refHeight;
   double m_refDensity;
   double m_stepHeight;
   double m_rotation;
   double m_bodyDragTerm;
-  map< string, double > m_evaledPartials;
+  std::map< std::string, double > m_evaledPartials;
 
-  vector< string > m_agentsOwned = { "X", "Y", "Z", "dX", "dY", "dZ",
-                                     "h_ref", "rho_ref", "step", "rot",
-                                     "Cd" };
+  /// @todo need some way of identifying h_ref, rho_ref, step, rot, Cd
+  /// for a particular planetary atmosphere.
+  std::vector< std::string > m_agentsOwned = { "X", "Y", "Z", "dX", "dY", "dZ",
+                                             "h_ref", "rho_ref", "step", "rot",
+                                             "Cd" };
 
-  double adjustedDensity( const vector< double > state ) const;
-  double adjustedVelocity( const vector< double > state ) const;
+  double adjustedDensity( const std::vector< double > state ) const;
+  double adjustedVelocity( const std::vector< double > state ) const;
 
-  double getAgentPartial( const string &top, const string &bottom );
-  void evalPartials( const vector< double > &state );
+  double getAgentPartial( const std::string &top, const std::string &bottom );
+  void evalPartials( const std::vector< double > &state );
 };
 
 #endif // EKF_ATMOSPHEREACTION_HEADER_GUARD

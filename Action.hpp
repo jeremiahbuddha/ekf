@@ -1,40 +1,43 @@
-#ifndef EKF_ACTION_INCLUDE_
-#define EKF_ACTION_INCLUDE_
+// -*- coding:utf-8; mode:c++; mode:auto-fill; fill-column:80; -*-
 
+///
+/// @file    Action.hpp
+/// @brief   Base class for defining forces capable of effecting the
+///          evolution of Motion objects.
+/// @author  Jonathon Smith <jonathon.j.smith@gmail.com>
+/// @date    January 24, 2015
+///
+
+#ifndef EKF_ACTION_HEADER_GUARD
+#define EKF_ACTION_HEADER_GUARD
+
+// C++ Standard Library
 #include <vector>
-#include <AgentGroup.hpp>
-
-using namespace std;
 
 class Action
 {
-   /*
-   The Action class defines a force capable of effecting the evolution of a
-   Motion object.
-   */
-   public:
-      // Constructor
-      Action(){};
+ public:
+  // Constructor
+  Action(){};
 
-      // Computes the acceleration due to this action and adds it to the
-      // passed in vector "acceleration".
-      virtual void getAcceleration( vector< double > &acceleration,
-                                     const vector< double > &state ) const = 0;
+  // Computes the acceleration due to this action and adds it to the
+  // passed in vector "acceleration".
+  virtual void getAcceleration( std::vector< double > &acceleration,
+                                const std::vector< double > &state ) const = 0;
 
-      // Computes the partial derivative of the acceleration terms and owned
-      // parameters
-      virtual void getPartials( vector < double > &partials,
-                                const vector< double > &state,
-                                const vector< string >  &activeAgents ) = 0;
-      // Destructor
-      virtual ~Action(){};
+  // Computes the partial derivative of the acceleration terms and owned
+  // parameters
+  virtual void getPartials( std::vector < double > &partials,
+                            const std::vector< double > &state,
+                            const std::vector< std::string >  &activeAgents ) = 0;
+  // Destructor
+  virtual ~Action(){};
 
-   protected:
-     const bool m_debug = false;
+  protected:
+    /// @todo this needs to go eventually
+    const bool m_debug = false;
 
-   private:
-
-
+  private:
 };
 
-#endif // Include guard
+#endif // EKF_ACTION_HEADER_GUARD

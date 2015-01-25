@@ -29,12 +29,7 @@
 ///
 /// This class is responsible for computing partial derivatives of the
 /// following paramters:
-///   - Cartesian state X-component
-///   - Cartesian state Y-component
-///   - Cartesian state Z-component
-///   - Cartesian state dX-component
-///   - Cartesian state dY-component
-///   - Cartesian state dZ-component
+///   - Cartesian state X, Y, Z, dX, dY, dZ components
 ///   - Gravitational body radius
 ///   - Gravitational body GM
 ///   - Gravitational body J2 term
@@ -43,35 +38,37 @@ class GravityAction : public Action
 {
  public:
   GravityAction();
-  GravityAction( const string name, const double radius, const double mu,
+  GravityAction( const std::string name, const double radius, const double mu,
                  const double J2 );
 
  ~GravityAction() override;
 
   // Computes the acceleration due to this action and adds it to the
   // passed in vector "acceleration".
-  void getAcceleration( vector< double > &acceleration,
-                        const vector< double > &state ) const override;
+  void getAcceleration( std::vector< double > &acceleration,
+                        const std::vector< double > &state ) const override;
 
-  // Computes the partial derivative of the acceleration terms and owned
-  // parameters
-  void getPartials( vector< double > &partials, const vector< double > &state,
-                    const vector< string >  &activeAgents ) override;
+  // Computes the partial derivative of the acceleration terms and
+  // owned parameters
+  void getPartials( std::vector< double > &partials,
+                    const std::vector< double > &state,
+                    const std::vector< std::string >  &activeAgents ) override;
  private:
-  string m_name;
+  std::string m_name;
   double m_radius;
   double m_mu;
   double m_J2;
   /// @todo need some way of identifying radius, mu, J2 for a
   /// particular gravitational body
-  vector< string > m_agentsOwned = { "X", "Y", "Z", "dX", "dY", "dZ",
-                                     "radius", "mu", "J2" };
-  map< string, double > m_evaledPartials;
+  std::vector< std::string > m_agentsOwned = { "X", "Y", "Z", "dX", "dY", "dZ",
+                                               "radius", "mu", "J2" };
+  std::map< std::string, double > m_evaledPartials;
 
-  double accJ2( const vector< double > &state, const char component ) const;
+  double accJ2( const std::vector< double > &state,
+                const char component ) const;
 
-  double getAgentPartial( const string &top, const string &bottom );
-  void evalPartials( const vector< double > &state );
+  double getAgentPartial( const std::string &top, const std::string &bottom );
+  void evalPartials( const std::vector< double > &state );
 };
 
 #endif // EKF_GRAVITYACTION_HEADER_GUARD
